@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -36,52 +37,65 @@ import java.util.ArrayList;
 public class MainActivity extends ActionBarActivity {
 
     class BookClass {
-        private int key = -1;
-        private String title = "";
-        private int price = 0;
-        private String pictureURL = "";
-        private Drawable image;
-        private String isbn = "";
+        private int mKey = -1;
+        private String mTitle = "";
+        private int mPrice = 0;
+        private String mPictureURL = "";
+        private Drawable mImage;
+        private String mISBN = "";
+        private boolean mSelected = false;
 
         BookClass(int aKey, String aTitle, Integer aPrice, String aPictureURL, String aISBN) {
-            key = aKey;
-            title = aTitle;
-            price = aPrice;
-            pictureURL = aPictureURL;
-            isbn = aISBN;
+            mKey = aKey;
+            mTitle = aTitle;
+            mPrice = aPrice;
+            mPictureURL = aPictureURL;
+            mISBN = aISBN;
         }
 
        public String getTitle() {
-           return title;
+           return mTitle;
        }
 
        public String getPriceString() {
-           return String.valueOf(price) + "€";
+           return String.valueOf(mPrice) + "€";
        }
 
        public int getPrice() {
-            return price;
+            return mPrice;
         }
 
        public String getPictureURL() {
-           return pictureURL;
+           return mPictureURL;
        }
 
        public String getISBN() {
-           return isbn;
+           return mISBN;
        }
 
        public void loadImage() {
-           LoadRemoteImageTask loadImageTask = new LoadRemoteImageTask(key);
-           loadImageTask.execute(pictureURL);
+           LoadRemoteImageTask loadImageTask = new LoadRemoteImageTask(mKey);
+           loadImageTask.execute(mPictureURL);
        }
 
        public void setImage(Drawable anImage) {
-           image = anImage;
+           mImage = anImage;
        }
 
        public Drawable getImage() {
-           return image;
+           return mImage;
+       }
+
+       public void setSelected() {
+           mSelected = true;
+       }
+
+       public void setDeselected() {
+           mSelected = false;
+       }
+
+       public boolean isSelected() {
+           return mSelected;
        }
     }
 
@@ -89,6 +103,7 @@ public class MainActivity extends ActionBarActivity {
 
     class CustomGrid extends BaseAdapter {
         private Context mContext;
+
         public CustomGrid() {
             mContext = self;
         }
@@ -120,14 +135,27 @@ public class MainActivity extends ActionBarActivity {
                 TextView priceView = (TextView) grid.findViewById(R.id.grid_item_price);
                 ImageView imageView = (ImageView) grid.findViewById(R.id.grid_item_image);
 
-                checkBox.setTag(position);
+                checkBox.setId(position);
                 checkBox.setOnClickListener(new View.OnClickListener() {
 
                     @Override
                     public void onClick(View v) {
+                        CheckBox cb = (CheckBox) v;
+                        int id = cb.getId();
 
+                        if (mJSONResponse.get(id).isSelected()) {
+                            mJSONResponse.get(id).setDeselected();
+                        } else {
+                            mJSONResponse.get(id).setSelected();
+                        }
                     }
                 });
+
+                if (mJSONResponse.get(position).isSelected()) {
+                    checkBox.setChecked(true);
+                } else {
+                    checkBox.setChecked(false);
+                }
 
                 titleView.setText(aBook.getTitle());
                 priceView.setText(aBook.getPriceString());
@@ -240,7 +268,7 @@ public class MainActivity extends ActionBarActivity {
         inflater.inflate(R.menu.menu_main, menu);
 
         RelativeLayout badgeLayout = (RelativeLayout) menu.findItem(R.id.action_show_items).getActionView();
-        TextView tv = (TextView) badgeLayout.findViewById(R.id.counter);
+        mCounter = (TextView) badgeLayout.findViewById(R.id.counter);
 
         return super.onCreateOptionsMenu(menu);
 
