@@ -186,7 +186,7 @@ public class MainActivity extends ActionBarActivity {
         RequestQueue queue = Volley.newRequestQueue(this);
 
         // Request a string response from the provided URL.
-        JsonArrayRequest jsonArraytRequest = new JsonArrayRequest(urlJsonArray,
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(urlJsonArray,
                 new Response.Listener<JSONArray>(){
                     @Override
                     public void onResponse(JSONArray response) {
@@ -198,7 +198,7 @@ public class MainActivity extends ActionBarActivity {
             public void onErrorResponse(VolleyError error) {}
         });
         // Add the request to the RequestQueue.
-        queue.add(jsonArraytRequest);
+        queue.add(jsonArrayRequest);
     }
 
     private void parseJSONResponse(JSONArray jsonArray) {
