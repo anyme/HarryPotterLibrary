@@ -160,11 +160,13 @@ public class MainActivity extends ActionBarActivity {
 
         protected void onPostExecute(Drawable result) {
             jsonResponse.get(key).setImage(result);
+            adapter.notifyDataSetChanged();
         }
     }
 
 
     private final String urlJsonArray = "http://henri-potier.xebia.fr/books";
+    private CustomGrid adapter;
     private GridView grid;
 
     private ArrayList<BookClass> jsonResponse;
@@ -222,8 +224,7 @@ public class MainActivity extends ActionBarActivity {
 
 
     private void inflateListWithData() {
-
-        CustomGrid adapter = new CustomGrid();
+        adapter = new CustomGrid();
         grid = (GridView) findViewById(R.id.gridview);
         grid.setAdapter(adapter);
        /* grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
