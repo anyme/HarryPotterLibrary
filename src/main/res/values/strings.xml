@@ -3,6 +3,6 @@
 
     <string name="app_name">Harry Potter Library</string>
     <string name="list_title">Séléctionner parmi les articles</string>
-    <string name="action_settings">Settings</string>
+    <string name="menu_basket">Panier</string>
 
 </resources>

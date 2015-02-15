@@ -5,15 +5,16 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.volley.RequestQueue;
@@ -94,7 +95,7 @@ public class MainActivity extends ActionBarActivity {
         @Override
         public int getCount() {
             // TODO Auto-generated method stub
-            return jsonResponse.size();
+            return mJSONResponse.size();
         }
         @Override
         public Object getItem(int position) {
@@ -111,7 +112,7 @@ public class MainActivity extends ActionBarActivity {
             LayoutInflater inflater = (LayoutInflater) mContext
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             View grid = inflater.inflate(R.layout.grid_item, null);
-            BookClass aBook = jsonResponse.get(position);
+            BookClass aBook = mJSONResponse.get(position);
 
             if (aBook != null) {
                 CheckBox checkBox = (CheckBox) grid.findViewById(R.id.grid_item_checkbox);
@@ -159,27 +160,24 @@ public class MainActivity extends ActionBarActivity {
         }
 
         protected void onPostExecute(Drawable result) {
-            jsonResponse.get(key).setImage(result);
-            adapter.notifyDataSetChanged();
+            mJSONResponse.get(key).setImage(result);
+            mAdapter.notifyDataSetChanged();
         }
     }
 
 
-    private final String urlJsonArray = "http://henri-potier.xebia.fr/books";
-    private CustomGrid adapter;
-    private GridView grid;
-
-    private ArrayList<BookClass> jsonResponse;
-
+    private final String mURLJsonArray = "http://henri-potier.xebia.fr/books";
+    private CustomGrid mAdapter;
+    private GridView mGrid;
+    private TextView mCounter;
+    private ArrayList<BookClass> mJSONResponse;
     private Context self = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         makeJSONArrayRequest();
-
     }
 
     private void makeJSONArrayRequest() {
@@ -188,7 +186,7 @@ public class MainActivity extends ActionBarActivity {
         RequestQueue queue = Volley.newRequestQueue(this);
 
         // Request a string response from the provided URL.
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(urlJsonArray,
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(mURLJsonArray,
                 new Response.Listener<JSONArray>(){
                     @Override
                     public void onResponse(JSONArray response) {
@@ -204,7 +202,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void parseJSONResponse(JSONArray jsonArray) {
-        jsonResponse = new ArrayList<BookClass>();
+        mJSONResponse = new ArrayList<BookClass>();
         for (int i = 0; i < jsonArray.length(); ++i) {
            try {
                JSONObject aBook = (JSONObject) jsonArray.get(i);
@@ -215,7 +213,7 @@ public class MainActivity extends ActionBarActivity {
 
                aBookInstance.loadImage();
 
-               jsonResponse.add(aBookInstance);
+               mJSONResponse.add(aBookInstance);
 
            } catch (JSONException e) {}
 
@@ -224,16 +222,33 @@ public class MainActivity extends ActionBarActivity {
 
 
     private void inflateListWithData() {
-        adapter = new CustomGrid();
-        grid = (GridView) findViewById(R.id.gridview);
-        grid.setAdapter(adapter);
-       /* grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mAdapter = new CustomGrid();
+        mGrid = (GridView) findViewById(R.id.gridview);
+        mGrid.setAdapter(mAdapter);
+       /* mGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                Toast.makeText(MainActivity.this, "You Clicked at " + jsonResponse.get(position).getTitle(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "You Clicked at " + mJSONResponse.get(position).getTitle(), Toast.LENGTH_SHORT).show();
             }
         });*/
+    }
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu items for use in the action bar
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+
+        RelativeLayout badgeLayout = (RelativeLayout) menu.findItem(R.id.action_show_items).getActionView();
+        TextView tv = (TextView) badgeLayout.findViewById(R.id.counter);
+
+        return super.onCreateOptionsMenu(menu);
+
+
+       /* getMenuInflater().inflate(R.menu.menu_main, menu);
+        RelativeLayout badgeLayout = (RelativeLayout) menu.findItem(R.id.badge).getActionView();
+        mCounter = (TextView) badgeLayout.findViewById(R.id.counter);
+        return true;*/
     }
 
 }
