@@ -5,7 +5,6 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -145,9 +144,12 @@ public class MainActivity extends ActionBarActivity {
 
                         if (mJSONResponse.get(id).isSelected()) {
                             mJSONResponse.get(id).setDeselected();
+                            --mCounter;
                         } else {
                             mJSONResponse.get(id).setSelected();
+                            ++mCounter;
                         }
+                        mCounterView.setText(String.valueOf(mCounter));
                     }
                 });
 
@@ -197,7 +199,8 @@ public class MainActivity extends ActionBarActivity {
     private final String mURLJsonArray = "http://henri-potier.xebia.fr/books";
     private CustomGrid mAdapter;
     private GridView mGrid;
-    private TextView mCounter;
+    private TextView mCounterView;
+    private int mCounter = 0;
     private ArrayList<BookClass> mJSONResponse;
     private Context self = this;
 
@@ -268,14 +271,14 @@ public class MainActivity extends ActionBarActivity {
         inflater.inflate(R.menu.menu_main, menu);
 
         RelativeLayout badgeLayout = (RelativeLayout) menu.findItem(R.id.action_show_items).getActionView();
-        mCounter = (TextView) badgeLayout.findViewById(R.id.counter);
+        mCounterView = (TextView) badgeLayout.findViewById(R.id.counter);
 
         return super.onCreateOptionsMenu(menu);
 
 
        /* getMenuInflater().inflate(R.menu.menu_main, menu);
         RelativeLayout badgeLayout = (RelativeLayout) menu.findItem(R.id.badge).getActionView();
-        mCounter = (TextView) badgeLayout.findViewById(R.id.counter);
+        mCounterView = (TextView) badgeLayout.findViewById(R.id.counter);
         return true;*/
     }
 

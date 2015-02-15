@@ -3,7 +3,6 @@
     android:layout_width="90dp"
     android:paddingTop="15dp"
     android:layout_height="wrap_content"
-    android:background="#465768"
     android:clickable="true">
 
     <TextView
