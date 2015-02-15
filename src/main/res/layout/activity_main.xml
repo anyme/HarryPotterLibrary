@@ -15,7 +15,8 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/list_title"
         android:id="@+id/textView"
-        android:layout_marginBottom="10dp"/>
+        android:layout_marginBottom="10dp"
+        android:paddingLeft="10dp"/>
 
     <GridView
         android:id="@+id/gridview"

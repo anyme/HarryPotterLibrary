@@ -4,5 +4,7 @@
     <string name="app_name">Harry Potter Library</string>
     <string name="list_title">Séléctionner parmi les articles</string>
     <string name="menu_basket">Panier</string>
+    <string name="title_activity_main_activity2">Votre panier</string>
+    <string name="total_text">Total:</string>
 
 </resources>

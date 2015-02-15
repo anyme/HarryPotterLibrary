@@ -1,8 +1,7 @@
 package com.example.anastasia.harrypotterlibrary;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
@@ -27,78 +26,20 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 
 
 
 public class MainActivity extends ActionBarActivity {
 
-    class BookClass {
-        private int mKey = -1;
-        private String mTitle = "";
-        private int mPrice = 0;
-        private String mPictureURL = "";
-        private Drawable mImage;
-        private String mISBN = "";
-        private boolean mSelected = false;
-
-        BookClass(int aKey, String aTitle, Integer aPrice, String aPictureURL, String aISBN) {
-            mKey = aKey;
-            mTitle = aTitle;
-            mPrice = aPrice;
-            mPictureURL = aPictureURL;
-            mISBN = aISBN;
-        }
-
-       public String getTitle() {
-           return mTitle;
-       }
-
-       public String getPriceString() {
-           return String.valueOf(mPrice) + "€";
-       }
-
-       public int getPrice() {
-            return mPrice;
-        }
-
-       public String getPictureURL() {
-           return mPictureURL;
-       }
-
-       public String getISBN() {
-           return mISBN;
-       }
-
-       public void loadImage() {
-           LoadRemoteImageTask loadImageTask = new LoadRemoteImageTask(mKey);
-           loadImageTask.execute(mPictureURL);
-       }
-
-       public void setImage(Drawable anImage) {
-           mImage = anImage;
-       }
-
-       public Drawable getImage() {
-           return mImage;
-       }
-
-       public void setSelected() {
-           mSelected = true;
-       }
-
-       public void setDeselected() {
-           mSelected = false;
-       }
-
-       public boolean isSelected() {
-           return mSelected;
-       }
-    }
-
-
+    private final String mURLJsonArray = "http://henri-potier.xebia.fr/books";
+    private CustomGrid mAdapter;
+    private GridView mGrid;
+    private TextView mCounterView;
+    private int mCounter = 0;
+    private ArrayList<MyApplication.BookClass> mJSONResponse;
+    private Context self = this;
+    MyApplication mApplication;
 
     class CustomGrid extends BaseAdapter {
         private Context mContext;
@@ -126,7 +67,7 @@ public class MainActivity extends ActionBarActivity {
             LayoutInflater inflater = (LayoutInflater) mContext
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             View grid = inflater.inflate(R.layout.grid_item, null);
-            BookClass aBook = mJSONResponse.get(position);
+            MyApplication.BookClass aBook = mJSONResponse.get(position);
 
             if (aBook != null) {
                 CheckBox checkBox = (CheckBox) grid.findViewById(R.id.grid_item_checkbox);
@@ -171,43 +112,11 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    private class LoadRemoteImageTask extends AsyncTask<String, Void, Drawable> {
-
-        int key;
-
-        LoadRemoteImageTask(int aKey) {
-            key = aKey;
-        }
-
-        @Override
-        protected Drawable doInBackground(String... aURL) {
-            try {
-                InputStream is = (InputStream) new URL(aURL[0]).getContent();
-                Drawable d = Drawable.createFromStream(is, "src name");
-                return d;
-            } catch (Exception e) {}
-            return null;
-        }
-
-        protected void onPostExecute(Drawable result) {
-            mJSONResponse.get(key).setImage(result);
-            mAdapter.notifyDataSetChanged();
-        }
-    }
-
-
-    private final String mURLJsonArray = "http://henri-potier.xebia.fr/books";
-    private CustomGrid mAdapter;
-    private GridView mGrid;
-    private TextView mCounterView;
-    private int mCounter = 0;
-    private ArrayList<BookClass> mJSONResponse;
-    private Context self = this;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mApplication = (MyApplication) getApplicationContext();
         makeJSONArrayRequest();
     }
 
@@ -225,19 +134,20 @@ public class MainActivity extends ActionBarActivity {
                         inflateListWithData();
                     }
                 }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {}
+                    @Override
+                    public void onErrorResponse(VolleyError error) {}
         });
         // Add the request to the RequestQueue.
         queue.add(jsonArrayRequest);
     }
 
     private void parseJSONResponse(JSONArray jsonArray) {
-        mJSONResponse = new ArrayList<BookClass>();
+        mJSONResponse = new ArrayList<MyApplication.BookClass>();
+
         for (int i = 0; i < jsonArray.length(); ++i) {
            try {
                JSONObject aBook = (JSONObject) jsonArray.get(i);
-               BookClass aBookInstance = new BookClass(i, aBook.getString("title"),
+               MyApplication.BookClass aBookInstance = mApplication.createBookClassInstance(i, aBook.getString("title"),
                        aBook.getInt("price"),
                        aBook.getString("cover"),
                        aBook.getString("isbn"));
@@ -249,20 +159,15 @@ public class MainActivity extends ActionBarActivity {
            } catch (JSONException e) {}
 
         }
+        mApplication.setJSONResponse(mJSONResponse);
     }
 
 
     private void inflateListWithData() {
         mAdapter = new CustomGrid();
+        mApplication.setGridAdapter(mAdapter);
         mGrid = (GridView) findViewById(R.id.gridview);
         mGrid.setAdapter(mAdapter);
-       /* mGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
-                Toast.makeText(MainActivity.this, "You Clicked at " + mJSONResponse.get(position).getTitle(), Toast.LENGTH_SHORT).show();
-            }
-        });*/
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -273,13 +178,17 @@ public class MainActivity extends ActionBarActivity {
         RelativeLayout badgeLayout = (RelativeLayout) menu.findItem(R.id.action_show_items).getActionView();
         mCounterView = (TextView) badgeLayout.findViewById(R.id.counter);
 
+        badgeLayout.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(self, CommercialOfferActivity.class);
+                startActivity(intent);
+            }
+        });
+
         return super.onCreateOptionsMenu(menu);
 
-
-       /* getMenuInflater().inflate(R.menu.menu_main, menu);
-        RelativeLayout badgeLayout = (RelativeLayout) menu.findItem(R.id.badge).getActionView();
-        mCounterView = (TextView) badgeLayout.findViewById(R.id.counter);
-        return true;*/
     }
 
 }
