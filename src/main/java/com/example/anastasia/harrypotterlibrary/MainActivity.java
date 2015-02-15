@@ -35,15 +35,18 @@ import java.util.ArrayList;
 public class MainActivity extends ActionBarActivity {
 
     class BookClass {
+        private int key = -1;
         private String title = "";
         private int price = 0;
-        private String picture = "";
+        private String pictureURL = "";
+        private Drawable image;
         private String isbn = "";
 
-        BookClass(String aTitle, Integer aPrice, String aPicture, String aISBN) {
+        BookClass(int aKey, String aTitle, Integer aPrice, String aPictureURL, String aISBN) {
+            key = aKey;
             title = aTitle;
             price = aPrice;
-            picture = aPicture;
+            pictureURL = aPictureURL;
             isbn = aISBN;
         }
 
@@ -59,12 +62,25 @@ public class MainActivity extends ActionBarActivity {
             return price;
         }
 
-       public String getPicture() {
-           return picture;
+       public String getPictureURL() {
+           return pictureURL;
        }
 
        public String getISBN() {
            return isbn;
+       }
+
+       public void loadImage() {
+           LoadRemoteImageTask loadImageTask = new LoadRemoteImageTask(key);
+           loadImageTask.execute(pictureURL);
+       }
+
+       public void setImage(Drawable anImage) {
+           image = anImage;
+       }
+
+       public Drawable getImage() {
+           return image;
        }
     }
 
@@ -112,12 +128,11 @@ public class MainActivity extends ActionBarActivity {
                     }
                 });
 
-
                 titleView.setText(aBook.getTitle());
                 priceView.setText(aBook.getPriceString());
 
-                LoadRemoteImageTask loadImageTask = new LoadRemoteImageTask(imageView);
-                loadImageTask.execute(aBook.getPicture());
+                imageView.setImageDrawable(aBook.getImage());
+
             } else {
                 grid = convertView;
             }
@@ -127,10 +142,10 @@ public class MainActivity extends ActionBarActivity {
 
     private class LoadRemoteImageTask extends AsyncTask<String, Void, Drawable> {
 
-        ImageView imageView;
+        int key;
 
-        LoadRemoteImageTask(ImageView anImageView) {
-            imageView = anImageView;
+        LoadRemoteImageTask(int aKey) {
+            key = aKey;
         }
 
         @Override
@@ -144,8 +159,7 @@ public class MainActivity extends ActionBarActivity {
         }
 
         protected void onPostExecute(Drawable result) {
-            imageView.setImageDrawable(result);
-
+            jsonResponse.get(key).setImage(result);
         }
     }
 
@@ -192,10 +206,12 @@ public class MainActivity extends ActionBarActivity {
         for (int i = 0; i < jsonArray.length(); ++i) {
            try {
                JSONObject aBook = (JSONObject) jsonArray.get(i);
-               BookClass aBookInstance = new BookClass(aBook.getString("title"),
+               BookClass aBookInstance = new BookClass(i, aBook.getString("title"),
                        aBook.getInt("price"),
                        aBook.getString("cover"),
                        aBook.getString("isbn"));
+
+               aBookInstance.loadImage();
 
                jsonResponse.add(aBookInstance);
 
