@@ -5,12 +5,15 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.CheckBox;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.android.volley.RequestQueue;
@@ -94,11 +97,21 @@ public class MainActivity extends ActionBarActivity {
             View grid = inflater.inflate(R.layout.grid_item, null);
             BookClass aBook = jsonResponse.get(position);
 
-            if (convertView == null && aBook != null) {
-                grid = inflater.inflate(R.layout.grid_item, null);
+            if (aBook != null) {
+                CheckBox checkBox = (CheckBox) grid.findViewById(R.id.grid_item_checkbox);
                 TextView titleView = (TextView) grid.findViewById(R.id.grid_item_title);
                 TextView priceView = (TextView) grid.findViewById(R.id.grid_item_price);
-                ImageView imageView = (ImageView)grid.findViewById(R.id.grid_item_image);
+                ImageView imageView = (ImageView) grid.findViewById(R.id.grid_item_image);
+
+                checkBox.setTag(position);
+                checkBox.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+
+                    }
+                });
+
 
                 titleView.setText(aBook.getTitle());
                 priceView.setText(aBook.getPriceString());
@@ -149,11 +162,11 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        makejsonArrayRequest();
+        makeJSONArrayRequest();
 
     }
 
-    private void makejsonArrayRequest() {
+    private void makeJSONArrayRequest() {
 
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(this);
@@ -195,7 +208,7 @@ public class MainActivity extends ActionBarActivity {
     private void inflateListWithData() {
 
         CustomGrid adapter = new CustomGrid();
-        grid=(GridView)findViewById(R.id.gridview);
+        grid = (GridView) findViewById(R.id.gridview);
         grid.setAdapter(adapter);
        /* grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
