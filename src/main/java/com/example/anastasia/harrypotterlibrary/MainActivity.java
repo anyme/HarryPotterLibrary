@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.android.volley.NetworkError;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -39,6 +40,7 @@ public class MainActivity extends ActionBarActivity {
     private int mCounter = 0;
     private ArrayList<MyApplication.BookClass> mJSONResponse;
     private Context self = this;
+    private Menu mMenu;
     MyApplication mApplication;
 
     class CustomGrid extends BaseAdapter {
@@ -91,6 +93,11 @@ public class MainActivity extends ActionBarActivity {
                             ++mCounter;
                         }
                         mCounterView.setText(String.valueOf(mCounter));
+                        if (mCounter > 0) {
+                            enableMenuClick();
+                        } else {
+                            disableMenuClick();
+                        }
                     }
                 });
 
@@ -135,7 +142,14 @@ public class MainActivity extends ActionBarActivity {
                     }
                 }, new Response.ErrorListener() {
                     @Override
-                    public void onErrorResponse(VolleyError error) {}
+                    public void onErrorResponse(VolleyError error) {
+                        TextView listTitle = (TextView) findViewById(R.id.list_title);
+                        if (error instanceof NetworkError) {
+                            listTitle.setText(R.string.network_problem_message);
+                        }
+
+
+                    }
         });
         // Add the request to the RequestQueue.
         queue.add(jsonArrayRequest);
@@ -172,6 +186,7 @@ public class MainActivity extends ActionBarActivity {
 
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu items for use in the action bar
+        mMenu = menu;
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main, menu);
 
@@ -187,8 +202,20 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
+        disableMenuClick();
+
         return super.onCreateOptionsMenu(menu);
 
+    }
+
+    private void enableMenuClick() {
+        RelativeLayout badgeLayout = (RelativeLayout) mMenu.findItem(R.id.action_show_items).getActionView();
+        badgeLayout.setClickable(true);
+    }
+
+    private void disableMenuClick() {
+        RelativeLayout badgeLayout = (RelativeLayout) mMenu.findItem(R.id.action_show_items).getActionView();
+        badgeLayout.setClickable(false);
     }
 
 }
