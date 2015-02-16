@@ -114,8 +114,6 @@ public class MyApplication extends Application {
         mJSONResponse = aJSONResponse;
     }
 
-
-
     public BookClass createBookClassInstance(int aKey, String aTitle, Integer aPrice, String aPictureURL, String aISBN) {
         return new BookClass(aKey, aTitle, aPrice, aPictureURL, aISBN);
     }

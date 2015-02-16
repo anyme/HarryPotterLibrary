@@ -142,7 +142,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void parseJSONResponse(JSONArray jsonArray) {
-        mJSONResponse = new ArrayList<MyApplication.BookClass>();
+        mJSONResponse = new ArrayList<>();
 
         for (int i = 0; i < jsonArray.length(); ++i) {
            try {
