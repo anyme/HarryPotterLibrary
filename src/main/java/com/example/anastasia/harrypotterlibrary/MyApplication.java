@@ -15,32 +15,28 @@ import java.util.ArrayList;
 public class MyApplication extends Application {
     private ArrayList<BookClass> mJSONResponse;
     private BaseAdapter mGridAdapter;
-    /**
-     * Created by anastasia on 15/02/15.
-     */
+
     public class BookClass {
         private int mKey = -1;
         private String mTitle = "";
         private int mPrice = 0;
         private String mPictureURL = "";
         private Drawable mImage;
-        private String mISBN = "";
         private boolean mSelected = false;
 
-        BookClass(int aKey, String aTitle, Integer aPrice, String aPictureURL, String aISBN) {
+        BookClass(int aKey, String aTitle, Integer aPrice, String aPictureURL) {
             mKey = aKey;
             mTitle = aTitle;
             mPrice = aPrice;
             mPictureURL = aPictureURL;
-            mISBN = aISBN;
         }
 
         private class LoadRemoteImageTask extends AsyncTask<String, Void, Drawable> {
 
-            int key;
+            int mKey;
 
             LoadRemoteImageTask(int aKey) {
-                key = aKey;
+                mKey = aKey;
             }
 
             @Override
@@ -54,7 +50,7 @@ public class MyApplication extends Application {
             }
 
             protected void onPostExecute(Drawable result) {
-                mJSONResponse.get(key).setImage(result);
+                mJSONResponse.get(mKey).setImage(result);
                 mGridAdapter.notifyDataSetChanged();
             }
         }
@@ -70,14 +66,6 @@ public class MyApplication extends Application {
 
         public int getPrice() {
             return mPrice;
-        }
-
-        public String getPictureURL() {
-            return mPictureURL;
-        }
-
-        public String getISBN() {
-            return mISBN;
         }
 
         public void loadImage() {
@@ -114,8 +102,8 @@ public class MyApplication extends Application {
         mJSONResponse = aJSONResponse;
     }
 
-    public BookClass createBookClassInstance(int aKey, String aTitle, Integer aPrice, String aPictureURL, String aISBN) {
-        return new BookClass(aKey, aTitle, aPrice, aPictureURL, aISBN);
+    public BookClass createBookClassInstance(int aKey, String aTitle, Integer aPrice, String aPictureURL) {
+        return new BookClass(aKey, aTitle, aPrice, aPictureURL);
     }
 
     public void setGridAdapter(BaseAdapter aGridAdapter){

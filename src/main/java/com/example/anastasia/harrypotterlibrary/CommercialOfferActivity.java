@@ -33,7 +33,7 @@ public class CommercialOfferActivity extends ActionBarActivity {
     private CustomList mAdapter;
     private ListView mList;
     private int mTotal = 0;
-    private String initialText;
+    private String mInitialText;
 
 
     class CustomList extends BaseAdapter {
@@ -44,17 +44,14 @@ public class CommercialOfferActivity extends ActionBarActivity {
         }
         @Override
         public int getCount() {
-            // TODO Auto-generated method stub
             return mJSONResponse.size();
         }
         @Override
         public Object getItem(int position) {
-            // TODO Auto-generated method stub
             return null;
         }
         @Override
         public long getItemId(int position) {
-            // TODO Auto-generated method stub
             return 0;
         }
         @Override
@@ -89,7 +86,7 @@ public class CommercialOfferActivity extends ActionBarActivity {
         fetchSelectedItems();
         inflateListWithData();
         TextView totalView = (TextView) findViewById(R.id.total_textview);
-        initialText = (String) totalView.getText();
+        mInitialText = (String) totalView.getText();
         totalView.append("  " + mTotal);
         loadOfferSettings();
     }
@@ -156,9 +153,6 @@ public class CommercialOfferActivity extends ActionBarActivity {
         min = min < sliceOffer ? min : sliceOffer;
 
         TextView totalView = (TextView) findViewById(R.id.total_textview);
-        totalView.setText(initialText + "  " + min + "€  instead of  " + mTotal +"€");
-
+        totalView.setText(mInitialText + "  " + min + "€  au lieu de  " + mTotal +"€");
     }
-
-
 }

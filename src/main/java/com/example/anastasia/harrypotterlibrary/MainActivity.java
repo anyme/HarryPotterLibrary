@@ -51,17 +51,14 @@ public class MainActivity extends ActionBarActivity {
         }
         @Override
         public int getCount() {
-            // TODO Auto-generated method stub
             return mJSONResponse.size();
         }
         @Override
         public Object getItem(int position) {
-            // TODO Auto-generated method stub
             return null;
         }
         @Override
         public long getItemId(int position) {
-            // TODO Auto-generated method stub
             return 0;
         }
         @Override
@@ -163,8 +160,7 @@ public class MainActivity extends ActionBarActivity {
                JSONObject aBook = (JSONObject) jsonArray.get(i);
                MyApplication.BookClass aBookInstance = mApplication.createBookClassInstance(i, aBook.getString("title"),
                        aBook.getInt("price"),
-                       aBook.getString("cover"),
-                       aBook.getString("isbn"));
+                       aBook.getString("cover"));
 
                aBookInstance.loadImage();
 
@@ -185,7 +181,6 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu items for use in the action bar
         mMenu = menu;
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main, menu);
