@@ -150,7 +150,7 @@ public class CommercialOfferActivity extends ActionBarActivity {
 
         Integer percentageOffer = mTotal - offer.get("percentage") * mTotal / 100;
         Integer minusOffer = mTotal - offer.get("minus");
-        Integer sliceOffer = mTotal - (mTotal/sliceValue + mTotal%sliceValue == 0 ? 1 : 0) * offer.get("slice");
+        Integer sliceOffer = mTotal - (mTotal/sliceValue + (mTotal%sliceValue == 0 ? 0 : 1)) * offer.get("slice");
 
         Integer min = percentageOffer < minusOffer ? percentageOffer : minusOffer;
         min = min < sliceOffer ? min : sliceOffer;
